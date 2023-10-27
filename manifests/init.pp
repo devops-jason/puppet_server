@@ -226,7 +226,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   }
 
   exec { 'generate root sshkeys':
-    command => 'yes y | ssh-keygen -t rsa -b 2048 -C "r10k" -f /root/.ssh/id_rsa -q -N "" ',
+    command => '/usr/bin/yes y | /usr/bin/ssh-keygen -t rsa -b 2048 -C "r10k" -f /root/.ssh/id_rsa -q -N "" ',
     creates => '/root/.ssh/id_rsa',
   }
 
