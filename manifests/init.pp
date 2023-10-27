@@ -14,7 +14,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   package { 'puppetserver':
     ensure  => 'present',
     require => Exec['add puppet-release'],
-    notify  => Service['puppetsever'],
+    notify  => Service['puppetserver'],
   }
 
   package { 'hiera-eyaml':
@@ -246,6 +246,11 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     user    => 'root',
     minute  => '*/5',
     require => Class['r10k'],
+  }
+
+  service { 'puppetserver':
+    ensure  => 'running',
+    enabled => true,
   }
 
 }
