@@ -125,7 +125,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     notify  => Service['puppetserver'],
   }
 
-  file { '/etc/puppetlabs/puppetservver/conf.d/web-routes.conf':
+  file { '/etc/puppetlabs/puppetserver/conf.d/web-routes.conf':
     ensure  => 'present',
     owner   => 'root',
     group   => 'root',
