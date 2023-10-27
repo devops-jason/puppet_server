@@ -214,7 +214,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     ensure  => 'present',
     type    => 'ssh-rsa',
     target  => '/root/.ssh/known_hosts',
-    type    => 'ecdsa-sha2-nistp256 '
+    type    => 'ecdsa-sha2-nistp256',
     key     => 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlz\
     dHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg='
     require => Package['git']
