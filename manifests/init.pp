@@ -212,7 +212,6 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
 
   sshkey { 'github.com':
     ensure  => 'present',
-    type    => 'ssh-rsa',
     target  => '/root/.ssh/known_hosts',
     type    => 'ecdsa-sha2-nistp256',
     key     => 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlz\
