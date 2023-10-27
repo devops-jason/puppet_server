@@ -13,7 +13,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
 
   package { 'puppetserver':
     ensure  => 'present',
-    require => Exec['add puppet-release',
+    require => Exec['add puppet-release'],
     notify  => Service['puppetsever'],
   }
 
