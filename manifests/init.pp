@@ -54,7 +54,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => 'puppet:///modules/puppet_server/hiera.yaml'
+    source  => 'puppet:///modules/puppet_server/hiera.yaml',
     require => File['/etc/puppetlabs/puppet/'],
     notify  => Service['puppetserver'],
   }
