@@ -214,9 +214,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     ensure  => 'present',
     target  => '/root/.ssh/known_hosts',
     type    => 'ecdsa-sha2-nistp256',
-    key     => 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlz\
-    dHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG\
-    5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=',
+    key     => 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=',
     require => Package['git']
   }
 
@@ -224,11 +222,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     ensure => 'present',
     user   => 'root',
     type   => 'ssh-rsa',
-    key    => 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCnGRMg34lBwgtVt3xUclvX7mClOwp3O08y3y2hoz\
-    LKxDtNaWlby7Die4w2pl4DwnlcRghFK+/G0y0DNH7LoYXV/acaSuz2ONE/W1/g1Hvp4l1ZISMDDa3dBLhL\
-    kxgbL0vJYjMIF0Md41LaTcXP3pE/MMTm89SpniGqmwPIaRyL5zTMcVN7Ti+lf+nUdQmj2+sAdprz+cOOjl1\
-    gmoD+vuz71ngkWVGtyBwA1YXHnVrHdnEzqibteFtb1RIY4koLEam0Xlm+RvAfuCglZnvmSIjs3tVs+bca76B\
-    /+RFUQKml7cOMo3VQjQvrF/pE8IDpM4BcpRzmZeA2aJx7XIH6Gx/F'
+    key    => 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCnGRMg34lBwgtVt3xUclvX7mClOwp3O08y3y2hozLKxDtNaWlby7Die4w2pl4DwnlcRghFK+/G0y0DNH7LoYXV/acaSuz2ONE/W1/g1Hvp4l1ZISMDDa3dBLhLkxgbL0vJYjMIF0Md41LaTcXP3pE/MMTm89SpniGqmwPIaRyL5zTMcVN7Ti+lf+nUdQmj2+sAdprz+cOOjl1gmoD+vuz71ngkWVGtyBwA1YXHnVrHdnEzqibteFtb1RIY4koLEam0Xlm+RvAfuCglZnvmSIjs3tVs+bca76B/+RFUQKml7cOMo3VQjQvrF/pE8IDpM4BcpRzmZeA2aJx7XIH6Gx/F'
   }
 
   exec { 'generate root sshkeys':
