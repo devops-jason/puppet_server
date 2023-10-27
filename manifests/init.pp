@@ -249,8 +249,8 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   }
 
   service { 'puppetserver':
-    ensure  => 'running',
-    enabled => true,
+    ensure => 'running',
+    enable => true,
   }
 
 }
