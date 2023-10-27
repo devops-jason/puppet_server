@@ -111,7 +111,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     group   => 'root',
     mode    => '0644',
     content => template('puppet_server/global.conf.erb'),
-    requie  => File['/etc/puppetlabs/puppetserver/conf.d/'],
+    require  => File['/etc/puppetlabs/puppetserver/conf.d/'],
     notify  => Service['puppetserver'],
   }
 
