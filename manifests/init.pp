@@ -220,7 +220,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     require => Package['git']
   }
 
-  ssh_authoried_key { 'jasonmiller@macbook-air.local':
+  ssh_authorized_key { 'jasonmiller@macbook-air.local':
     ensure => 'present',
     user   => 'root',
     type   => 'ssh-rsa',
