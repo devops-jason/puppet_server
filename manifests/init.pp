@@ -7,8 +7,8 @@
 class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '512m' )
 {
   exec { 'add puppet-release':
-    command => 'dnf install https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm',
-    unless => 'dnf list | grep puppet-release 2> /dev/null',
+    command => '/usr/bin/dnf install https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm',
+    unless => '/usr/bin/dnf list | grep puppet-release 2> /dev/null',
   }
 
   package { 'puppetserver':
