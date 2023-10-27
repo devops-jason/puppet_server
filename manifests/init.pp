@@ -44,7 +44,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    content => template('puppet_server/puppet.conf.erb')
+    content => template('puppet_server/puppet.conf.erb'),
     require => [ Exec['add puppet-release'], File['/etc/puppetlabs/puppet'] ],
     notify  => Service['puppetserver'],
   }
