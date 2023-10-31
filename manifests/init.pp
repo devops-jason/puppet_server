@@ -1,24 +1,48 @@
-# @summary A short summary of the purpose of this class
+# @summary This sets up a puppetserver on CentOS 8
 #
-# A description of what this class does
+# This module sets up a puppetserver and configures r10k, hiera-eyaml, puppetdb, and puppet client.
 #
 # @example
-#   include puppet_server
-class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '512m' )
-{
-  exec { 'add puppet-release':
-    command => '/usr/bin/dnf install https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm',
-    unless => '/usr/bin/dnf list | grep puppet-release 2> /dev/null',
+#   class { 'puppet_server':
+#     r10k_control_repo    => 'git@github.com:devops-jason/controlrepo.git',
+#     min_heap_size        => '512m',
+#     max_heap_size        => '512m',
+#  }
+#
+# @param r10k_control_repo
+#   The git url for the control_repo used by r10k to deploy the modules per environment.
+#
+# @param min_heap_size
+#   Java heap size minimum used by the puppetserver in /etc/sysconfig/puppetserver.
+#
+# @param max_heap_size
+#   Java heap size maximum used by puppetserver in /etc/sysconfig/puppetserver.
+#
+class puppet_server (
+  String $r10k_control_repo,
+  String $min_heap_size = '512m',
+  String $max_heap_size = '512m'
+) {
+  package { 'puppet-release':
+    ensure   => 'installed',
+    source   => 'https://yum.puppetlabs.com/puppet-release-el-8.noarch.rpm',
+    provider => 'rpm',
   }
 
   package { 'puppetserver':
-    ensure  => 'present',
-    require => Exec['add puppet-release'],
+    ensure  => 'installed',
+    require => Package['puppet-release'],
     notify  => Service['puppetserver'],
   }
 
+  package { 'puppet':
+    ensure  => 'installed',
+    require => Package['puppet-release'],
+    notify  => Service['puppet'],
+  }
+
   package { 'hiera-eyaml':
-    ensure   => 'present',
+    ensure   => 'installed',
     require  => Package['puppetserver'],
     provider => 'puppet_gem',
   }
@@ -36,21 +60,21 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    require => File['/etc/puppetlabs/']
+    require => File['/etc/puppetlabs/'],
   }
 
   file { '/etc/puppetlabs/puppet/puppet.conf':
-    ensure  => 'present',
+    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     content => template('puppet_server/puppet.conf.erb'),
-    require => [ Exec['add puppet-release'], File['/etc/puppetlabs/puppet'] ],
-    notify  => Service['puppetserver'],
+    require => File['/etc/puppetlabs/puppet/'],
+    notify  => [Service['puppetserver'], Service['puppet']],
   }
 
   file { '/etc/puppetlabs/puppet/hiera.yaml':
-    ensure  => 'present',
+    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
@@ -59,118 +83,13 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     notify  => Service['puppetserver'],
   }
 
-  file { '/etc/puppetlabs/puppetserver/':
-    ensure  => 'directory',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    require => File['/etc/puppetlabs/'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/':
-    ensure  => 'directory',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    require => File['/etc/puppetlabs/puppetserver/'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/puppetserver.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/puppetserver.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/auth.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/auth.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/ca.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/ca.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver']
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/global.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/global.conf.erb'),
-    require  => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/metrics.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/metrics.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/web-routes.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/web-routes.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/conf.d/webserver.conf':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('puppet_server/webserver.conf.erb'),
-    require => File['/etc/puppetlabs/puppetserver/conf.d/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/request-logging.xml':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source  => 'puppet:///modules/puppet_server/request-logging.xml',
-    require => File['/etc/puppetlabs/puppetserver/'],
-    notify  => Service['puppetserver'],
-  }
-
-  file { '/etc/puppetlabs/puppetserver/logback.xml':
-    ensure  => 'present',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    source  => 'puppet:///modules/puppet_server/logback.xml',
-    require => File['/etc/puppetlabs/puppetserver/'],
-    notify  => Service['puppetserver'],
-  }
-
   file { '/etc/sysconfig/puppetserver':
-    ensure  => 'present',
+    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     content => template('puppet_server/sysconfig_puppetserver.erb'),
+    require => Package['puppetserver'],
     notify  => Service['puppetserver'],
   }
 
@@ -187,11 +106,11 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     --pkcs7-private-key=/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem\
     --pkcs7-public-key=/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem',
     creates => '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem',
-    require => File['/etc/puppetlabs/puppet/keys/']
+    require => File['/etc/puppetlabs/puppet/keys/'],
   }
 
   file { '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem':
-    ensure  => 'present',
+    ensure  => 'file',
     owner   => 'puppet',
     group   => 'puppet',
     mode    => '0400',
@@ -199,7 +118,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   }
 
   file { '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem':
-    ensure  => 'present',
+    ensure  => 'file',
     owner   => 'puppet',
     group   => 'puppet',
     mode    => '0400',
@@ -207,22 +126,7 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   }
 
   package { 'git':
-    ensure => 'present',
-  }
-
-  sshkey { 'github.com':
-    ensure  => 'present',
-    target  => '/root/.ssh/known_hosts',
-    type    => 'ecdsa-sha2-nistp256',
-    key     => 'AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=',
-    require => Package['git']
-  }
-
-  ssh_authorized_key { 'jasonmiller@macbook-air.local':
-    ensure => 'present',
-    user   => 'root',
-    type   => 'ssh-rsa',
-    key    => 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCnGRMg34lBwgtVt3xUclvX7mClOwp3O08y3y2hozLKxDtNaWlby7Die4w2pl4DwnlcRghFK+/G0y0DNH7LoYXV/acaSuz2ONE/W1/g1Hvp4l1ZISMDDa3dBLhLkxgbL0vJYjMIF0Md41LaTcXP3pE/MMTm89SpniGqmwPIaRyL5zTMcVN7Ti+lf+nUdQmj2+sAdprz+cOOjl1gmoD+vuz71ngkWVGtyBwA1YXHnVrHdnEzqibteFtb1RIY4koLEam0Xlm+RvAfuCglZnvmSIjs3tVs+bca76B/+RFUQKml7cOMo3VQjQvrF/pE8IDpM4BcpRzmZeA2aJx7XIH6Gx/F'
+    ensure => 'installed',
   }
 
   exec { 'generate root sshkeys':
@@ -231,15 +135,8 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
   }
 
   class { 'r10k':
-    remote  => 'git@github.com:devops-jason/controlrepo.git',
+    remote  => $r10k_control_repo,
     require => Exec['generate root sshkeys'],
-  }
-
-  cron { 'r10k deploy modules to production':
-    command => '/usr/bin/r10k deploy environment --modules production',
-    user    => 'root',
-    minute  => '*/5',
-    require => Class['r10k'],
   }
 
   service { 'puppetserver':
@@ -247,4 +144,8 @@ class puppet_server ( String $min_heap_size = '512m', String $max_heap_size = '5
     enable => true,
   }
 
+  service { 'puppet':
+    ensure => 'running',
+    enable => true,
+  }
 }

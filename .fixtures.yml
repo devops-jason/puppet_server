@@ -3,4 +3,23 @@
 ---
 fixtures:
   forge_modules:
-#     stdlib: "puppetlabs/stdlib"
+    inifile:
+      repo: "puppetlabs/inifile"
+      ref: "6.1.0"
+    stdlib:
+      repo: "puppetlabs/stdlib"
+      ref: "9.3.0"
+    vcsrepo:
+      repo: "puppetlabs/vcsrepo"
+      ref: "6.1.0"
+    mcollective:
+      repo: "choria/mcollective"
+      ref: "0.14.4"
+    systemd:
+      repo: "puppet/systemd"
+      ref: "6.0.0"
+    r10k:
+      repo: "puppet/r10k"
+      ref: "12.1.1"
+
+
