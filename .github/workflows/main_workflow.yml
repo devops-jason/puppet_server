@@ -1,0 +1,24 @@
+name: main_workflow_actions
+run-name: ${{ github.actor }} main_workflow_actions
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  pdk:
+    name: pdk
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      
+      - name: validate
+        uses: devops-jason/action-pdk@main
+        with:
+          action: 'validate'
+
+      - name: unit tests
+        users: devops-jason/action-pdk@main
+        with:
+          action: 'test unit'
