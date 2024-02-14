@@ -19,6 +19,6 @@ jobs:
           action: 'validate'
 
       - name: unit tests
-        users: devops-jason/action-pdk@main
+        uses: devops-jason/action-pdk@main
         with:
           action: 'test unit'
