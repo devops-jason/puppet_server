@@ -1,5 +1,5 @@
-name: main_workflow_actions
-run-name: ${{ github.actor }} main_workflow_actions
+name: pdk_workflow
+run-name: ${{ github.actor }} pdk_workflow
 
 on:
   - push
